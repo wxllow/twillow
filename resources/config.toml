@@ -1,0 +1,16 @@
+account_sid = 'YourTwilioAccountSID'
+auth_token = 'YourTwilioAuthToken'
+
+from_number = '+15555555555' # Number to send messages from
+to_number = '+15555555555' # Number to send messages to by default
+
+modules = [
+    './modules/ping.lua',  # Ping module
+    './modules/search.py', # Search module
+    './modules/8ball.lua', # 8ball module
+]
+
+[module.search]
+# See docs/google-cse.md
+google_api_key = 'YourAPIKey'
+google_cse_id = 'YourSearchEngineID'
