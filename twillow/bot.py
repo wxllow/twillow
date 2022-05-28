@@ -103,8 +103,12 @@ def sms_reply():
 
             f = getattr(modules[command[0]], listutils.get(command, 1))
             off = 1
+
+            if f is None:
+                raise AttributeError
         except AttributeError:
             try:
+                logging.debug('Command not found, running _all')
                 f = modules[command[0]]._all()
                 off = 2
 
