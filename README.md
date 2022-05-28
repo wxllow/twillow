@@ -1,6 +1,6 @@
 # Twillow
 
-A modular SMS bot using the Twilio API, written in Python. The name is a combination of Twilio and the creator's name, Willow.
+A modular SMS bot using the Twilio API, written in Python (with modules written in lua). The name is a combination of Twilio and the creator's name, Willow.
 
 ## Features
 
