@@ -10,7 +10,7 @@ from twilio.request_validator import RequestValidator
 
 from .config import get_config
 from .mod import load_module
-from twillow import listutils
+from . import listutils
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s",
                     datefmt="[%X]", handlers=[RichHandler()])
