@@ -18,7 +18,7 @@ def load_module(loc, type=None):
 
         # Load module
         spec = importlib.util.spec_from_file_location(
-            f"module.{name}", loc)
+            f"_module.{name}", loc)
 
         py_module = importlib.util.module_from_spec(spec)
 
