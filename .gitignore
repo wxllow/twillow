@@ -1,3 +1,4 @@
+config.toml
 
 # Created by https://www.toptal.com/developers/gitignore/api/Python,macOS
 # Edit at https://www.toptal.com/developers/gitignore?templates=Python,macOS
@@ -9,7 +10,7 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
 
 # Thumbnails
 ._*
