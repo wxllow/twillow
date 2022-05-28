@@ -5,7 +5,7 @@ from itertools import islice
 from googleapiclient.discovery import build
 from twilio.twiml.messaging_response import MessagingResponse
 
-from config import get_config
+from twillow.config import get_config
 
 config = get_config()
 
