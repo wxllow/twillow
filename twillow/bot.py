@@ -2,6 +2,7 @@
 import logging
 from functools import wraps
 
+from lupa import lua_type
 from rich.logging import RichHandler
 from flask import Flask, abort, request, redirect
 from twilio.rest import Client
@@ -129,9 +130,15 @@ def sms_reply():
             logging.exception(e)
             return error_message()
 
-        logging.debug(f'Args: {listutils.get_rem(command, off)}')
+        args = listutils.get_rem(command, off)
 
-        return str(f(*listutils.get_rem(command, off)))
+        # Fix args not working with lua
+        if lua_type(f) == 'function':
+            args.insert(0, None)
+
+        print(args)
+
+        return str(f(*args))
 
     return help
 
