@@ -4,7 +4,7 @@ PingModule = {
 
 function PingModule.new(o) 
     local inst = {}
-    -- "gaySex" command
+    
     function inst:ping()
         return '<Response><Message>🏓 Pong!</Message></Response>'
     end
