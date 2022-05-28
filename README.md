@@ -1,13 +1,20 @@
 # Twillow
 
-A modular SMS bot using the Twilio API, written in Python. The name is a combination of Twilio and my name, Willow.
+A modular SMS bot using the Twilio API, written in Python. The name is a combination of Twilio and the creator's name, Willow.
+
+## Features
+
+- Easily extendable/customizable
+  - *"Everything is a module"*
+  - Modules can be written in Lua or Python
+  - Configuration file to make Twillow perfect for you
 
 ## Requirements
 
 - Python 3.9 or later
 - Twillo account with a phone number
 - Public-facing webserver or port forwarding (to make webserver accessible to Twilio)
-- [Google Custom Search Engine](https://cse.google.com/cse/all)
+- [Google Custom Search Engine API Key](docs/google-cse.md)
 
 ### Dependencies
 
@@ -23,3 +30,29 @@ A modular SMS bot using the Twilio API, written in Python. The name is a combina
 #### External
 
 - [Lua](https://www.lua.org/download.html)
+
+## Installation
+
+- Clone the repo
+
+```sh
+git clone https://github.com/wxllow/twillow
+```
+
+- Create a virtual environment
+  
+```sh
+python3 -m venv ./venv
+```
+
+- Copy and edit the config file
+
+```sh
+cp resources/config.toml config.toml
+```
+
+- Run the bot
+
+```sh
+python3 main.py
+```
