@@ -1,6 +1,4 @@
 
-import os
-import shlex
 from functools import wraps
 
 from rich import print
@@ -69,32 +67,53 @@ def sms_reply():
     """Respond to incoming calls with a simple text message."""
     body = request.values.get('Body', None)
 
-    command = shlex.split(body)
+    command = body.split()
 
     if command:
         if command[0] in modules:
             try:
-                f = getattr(modules[command[0]], command[1])
-                offset = 2
-            except:
-                f = modules[command[0]]._command()
-                offset = 1
+                try:
+                    f = getattr(modules[command[0]], command[1])
+                    offset = 2
+                except AttributeError:
+                    f = modules[command[0]]._all()
+                    offset = 1
 
-            return str(f(*command[offset:]))
+                return str(f(*command[offset:]))
+            except AttributeError:
+                resp.message(
+                    "⛔️ Command not found in {command[0]} module!")
+            except IndexError:
+                resp = MessagingResponse()
 
-    # Error
+                # resp.message(f"⚠️ Error - I can't figure out how to do that :(")
+
+                resp.message(
+                    "⛔️ Not enough arguments")
+
+                return str(resp)
+
+    # Help command
     resp = MessagingResponse()
 
-    resp.message(f"I can't figure out how to do that :(")
+    resp.message(
+        "Command list coming soon 😳\nFor now, try the search and 8ball commands!")
 
     return str(resp)
 
 
-if __name__ == "__main__":
+def start():
     modules['search'] = load_module(
         './modules/search.py').module()(client=client)
+
+    modules['8ball'] = load_module(
+        './modules/8ball.py').module()(client=client)
 
     # Send bot started message to default receiver
     # send_message('Bot started!')
 
     app.run(debug=True)
+
+
+if __name__ == '__main__':
+    start()
