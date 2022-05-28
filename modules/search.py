@@ -9,29 +9,31 @@ from config import get_config
 
 config = get_config()
 
-api_key = config['modules']['search']['google_api_key']
-cse_id = config['modules']['search']['google_cse_id']
+api_key = config['module']['search']['google_api_key']
+cse_id = config['module']['search']['google_cse_id']
 
 
 class SearchModule:
-    def __init__(self, client) -> None:
-        self.client = client
+    def __init__(self):
+        self.name = "search"
 
     def search(self, *q):
         query = ' '.join(q)
-        limit = config['modules']['search'].get('limit', 3)
+        limit = config['module']['search'].get('limit', 3)
 
         service = build("customsearch", "v1", developerKey=api_key)
         res = service.cse().list(q=query, cx=cse_id).execute()
 
         resp = MessagingResponse()
 
+        resp.message(f'🔎 Results for "{query}"')
+
         for item in islice(res['items'], 0, limit):
             resp.message(f"{item['title']}\n\n{item['link']}")
 
         return resp
 
-    def _command(self, *args, **kwargs):
+    def _all(self, *args, **kwargs):
         return self.search
 
 
