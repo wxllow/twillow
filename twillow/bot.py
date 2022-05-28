@@ -58,7 +58,7 @@ def validate_twilio_request(f):
 
 
 def help_command():
-    # Help command
+    """Help command"""
     help = MessagingResponse()
 
     help.message("""
