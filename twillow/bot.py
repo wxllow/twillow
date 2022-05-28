@@ -1,7 +1,8 @@
 
+import logging
 from functools import wraps
 
-from rich import print
+from rich.logging import RichHandler
 from flask import Flask, abort, request, redirect
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
@@ -9,16 +10,21 @@ from twilio.request_validator import RequestValidator
 
 from config import get_config
 from mod import load_module
+import listutils
+
+logging.basicConfig(level=logging.DEBUG, format="%(message)s",
+                    datefmt="[%X]", handlers=[RichHandler()])
+log = logging.getLogger("rich")
 
 config = get_config()
+modules = {}  # Contains modules
 
-client = Client(config['account_sid'], config['auth_token'])
+client = Client(config['account_sid'], config['auth_token'])  # Twilio client
 app = Flask(__name__)
-
-modules = {}
 
 
 def send_message(body, to=config['to_number']):
+    """Sends a message"""
     message = client.messages.create(
         body=body,
         from_=config['from_number'],
@@ -51,9 +57,23 @@ def validate_twilio_request(f):
     return decorated_function
 
 
+def help_command():
+    # Help command
+    help = MessagingResponse()
+
+    help.message("""
+    Help:
+        search - Search for something on Google
+        8ball - Ask the magic 8 ball a question
+        """.strip())
+
+    return str(help)
+
+
 @app.route('/voice', methods=['GET', 'POST'])
 @validate_twilio_request
 def call_reply():
+    """Replies to incoming calls"""
     return """
 <Response>
 <Say voice="alice">Thank you for calling the sex hotline! Please wait while we transfer your call to a hot milf near you...</Say>
@@ -64,55 +84,57 @@ def call_reply():
 @app.route("/sms", methods=['GET', 'POST'])
 @validate_twilio_request
 def sms_reply():
-    """Respond to incoming calls with a simple text message."""
+    """Respond to incoming messages."""
     body = request.values.get('Body', None)
 
     command = body.split()
 
-    if command:
-        if command[0] in modules:
+    help = help_command()
+
+    if not command:
+        return help
+
+    # Try getting command from modules
+    if command[0] in modules:
+        # Try running subcommand, or run main command, if it exists.
+        try:
+            if len(command) < 2:
+                raise AttributeError
+
+            f = getattr(modules[command[0]], listutils.get(command, 1))
+            off = 1
+        except AttributeError:
             try:
-                try:
-                    f = getattr(modules[command[0]], command[1])
-                    offset = 2
-                except AttributeError:
-                    f = modules[command[0]]._all()
-                    offset = 1
+                f = modules[command[0]]._all()
+                off = 2
 
-                return str(f(*command[offset:]))
+                if f is None:
+                    raise AttributeError
             except AttributeError:
-                resp.message(
-                    "⛔️ Command not found in {command[0]} module!")
-            except IndexError:
-                resp = MessagingResponse()
+                return help
 
-                # resp.message(f"⚠️ Error - I can't figure out how to do that :(")
+            logging.debug(f'Running {f}')
+            return str(f(*listutils.get_rem(command, off)))
 
-                resp.message(
-                    "⛔️ Not enough arguments")
+    return help
 
-                return str(resp)
 
-    # Help command
-    resp = MessagingResponse()
+def load_modules(keep=False):
+    """Load modules (unloads previously loaded onces if keep is not true"""
+    # if not keep:
+    #     modules = {}
 
-    resp.message(
-        "Command list coming soon 😳\nFor now, try the search and 8ball commands!")
-
-    return str(resp)
+    # Load modules
+    for loc in config.get('modules', {}):
+        name, module = load_module(loc)
+        modules[name] = module
+        log.info(f'Loaded module: {module} as "{name}"')
 
 
 def start():
-    modules['search'] = load_module(
-        './modules/search.py').module()(client=client)
+    load_modules()
 
-    modules['8ball'] = load_module(
-        './modules/8ball.py').module()(client=client)
-
-    # Send bot started message to default receiver
-    # send_message('Bot started!')
-
-    app.run(debug=True)
+    app.run(debug=False)
 
 
 if __name__ == '__main__':
