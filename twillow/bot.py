@@ -70,6 +70,15 @@ def help_command():
     return str(help)
 
 
+def error_message():
+    """Error message"""
+    help = MessagingResponse()
+
+    help.message("""⛔️ Oops! An error has occured!""")
+
+    return str(help)
+
+
 @app.route('/voice', methods=['GET', 'POST'])
 @validate_twilio_request
 def call_reply():
@@ -85,9 +94,7 @@ def call_reply():
 @validate_twilio_request
 def sms_reply():
     """Respond to incoming messages."""
-    body = request.values.get('Body', None)
-
-    command = body.split()
+    command = request.values.get('Body', '').strip().split()
 
     help = help_command()
 
@@ -98,27 +105,33 @@ def sms_reply():
     if command[0] in modules:
         # Try running subcommand, or run main command, if it exists.
         try:
+            # If command length is less than 2, it can't be a subcommand
             if len(command) < 2:
                 raise AttributeError
 
-            f = getattr(modules[command[0]], listutils.get(command, 1))
-            off = 1
+            f = getattr(modules[command[0]], command[1])
+            off = 2
 
             if f is None:
                 raise AttributeError
         except AttributeError:
             try:
                 logging.debug('Command not found, running _all')
+
                 f = modules[command[0]]._all()
-                off = 2
+                off = 1
 
                 if f is None:
                     raise AttributeError
             except AttributeError:
                 return help
+        except Exception as e:
+            logging.exception(e)
+            return error_message()
 
-            logging.debug(f'Running {f}')
-            return str(f(*listutils.get_rem(command, off)))
+        logging.debug(f'Args: {listutils.get_rem(command, off)}')
+
+        return str(f(*listutils.get_rem(command, off)))
 
     return help
 
