@@ -1,4 +1,4 @@
-config.toml
+/config.toml
 secret_*
 
 # Created by https://www.toptal.com/developers/gitignore/api/Python,macOS
