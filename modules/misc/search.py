@@ -1,3 +1,4 @@
+# -- Search module using CSE --
 # Requires google-api-python-client
 
 from itertools import islice

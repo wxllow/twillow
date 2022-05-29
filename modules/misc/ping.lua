@@ -1,3 +1,4 @@
+-- Ping Pong! -- 
 PingModule = {
     ['name'] = 'ping' -- This is used as the command prefix
 }

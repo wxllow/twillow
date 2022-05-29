@@ -1,7 +1,6 @@
+-- Magic 8ball module -- 
 local math = require("math")
 local os = require("os")
-
-math.randomseed(os.time())
 
 local magic8ball = {'yes', 'no', 'maybe', 'probably', 'probably not', 'most definitely', 'yes, definitely', 'definitely not', 'no doubt', 'i doubt it'}
 
@@ -13,6 +12,7 @@ function MagicBallModule.new(o)
     local inst = {}
 
     function inst:magicball()
+        math.randomseed(os.time())
         return '<Response><Message>🎱 ' .. magic8ball[math.random(#magic8ball)] .. '</Message></Response>'
     end
 
