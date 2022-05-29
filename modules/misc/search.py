@@ -10,20 +10,23 @@ from twillow.config import get_config
 
 config = get_config()
 
-api_key = config['module']['search']['google_api_key']
-cse_id = config['module']['search']['google_cse_id']
+try:
+    api_key = config['module']['search']['google_api_key']
+    cse_id = config['module']['search']['google_cse_id']
+except KeyError:
+    raise Exception('Google CSE API Key is required! See docs/google-cse.md')
 
 
 class SearchModule:
     def __init__(self):
         self.name = "search"
+        self.service = build("customsearch", "v1", developerKey=api_key)
 
     def search(self, *q):
         query = ' '.join(q)
         limit = config['module']['search'].get('limit', 3)
 
-        service = build("customsearch", "v1", developerKey=api_key)
-        res = service.cse().list(q=query, cx=cse_id).execute()
+        res = self.service.cse().list(q=query, cx=cse_id).execute()
 
         resp = MessagingResponse()
 
