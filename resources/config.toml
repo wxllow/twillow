@@ -4,10 +4,15 @@ auth_token = 'YourTwilioAuthToken'
 from_number = '+15555555555' # Number to send messages from
 to_number = '+15555555555' # Number to send messages to by default
 
+voice_handler = '' # Specify a location for a voice handler
+
 modules = [
-    './modules/ping.lua',  # Ping module
-    './modules/search.py', # Search module
-    './modules/8ball.lua', # 8ball module
+    # Miscellaneous Modules
+    './modules/misc/ping.lua',
+    './modules/misc/8ball.lua',
+    './modules/misc/media.lua',
+    './modules/misc/search.py',
+    # Custom Modules
 ]
 
 [module.search]
