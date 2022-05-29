@@ -1,6 +1,5 @@
 # -- Search module using CSE --
 # Requires google-api-python-client
-
 from itertools import islice
 
 from googleapiclient.discovery import build
@@ -31,6 +30,10 @@ class SearchModule:
         resp = MessagingResponse()
 
         resp.message(f'🔎 Results for "{query}"')
+
+        if int(res['searchInformation']['totalResults']) < 1:
+            resp.message('⛔️ No results found!')
+            return resp
 
         for item in islice(res['items'], 0, limit):
             resp.message(f"{item['title']}\n\n{item['link']}")
