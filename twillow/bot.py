@@ -1,4 +1,5 @@
 
+import random
 import logging
 from functools import wraps
 
@@ -10,7 +11,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from twilio.request_validator import RequestValidator
 
 from .config import get_config
-from .mod import load_module
+from .mod import load_module, load_voice_handler
 from . import listutils
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s",
@@ -22,6 +23,8 @@ modules = {}  # Contains modules
 
 client = Client(config['account_sid'], config['auth_token'])  # Twilio client
 app = Flask(__name__)
+
+voice_handler = None
 
 
 def send_message(body, to=config['to_number']):
@@ -84,11 +87,10 @@ def error_message():
 @validate_twilio_request
 def call_reply():
     """Replies to incoming calls"""
-    return """
-<Response>
-<Say voice="alice">Thank you for calling the sex hotline! Please wait while we transfer your call to a hot milf near you...</Say>
-</Response>
-"""
+    if voice_handler:
+        return voice_handler.call_reply(request)
+
+    return ""
 
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -141,10 +143,8 @@ def sms_reply():
     return help
 
 
-def load_modules(keep=False):
+def load_modules():
     """Load modules (unloads previously loaded onces if keep is not true"""
-    # if not keep:
-    #     modules = {}
 
     # Load modules
     for loc in config.get('modules', {}):
@@ -153,8 +153,24 @@ def load_modules(keep=False):
         log.info(f'Loaded module: {module} as "{name}"')
 
 
+def load_voice_handlers():
+    loc = config.get('voice_handler', None)
+
+    if not loc:
+        return
+
+    name, v = load_voice_handler(loc)
+
+    global voice_handler
+    voice_handler = v
+
+    log.info(f'Loaded voice handler: {voice_handler} as "{name}"')
+
+
 def start():
     load_modules()
+
+    load_voice_handlers()
 
     app.run(debug=False)
 
