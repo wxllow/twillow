@@ -132,11 +132,9 @@ def sms_reply():
 
         args = listutils.get_rem(command, off)
 
-        # Fix args not working with lua
+        # Add blank arg to fix first arg not working with lua
         if lua_type(f) == 'function':
             args.insert(0, None)
-
-        print(args)
 
         return str(f(*args))
 
