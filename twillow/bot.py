@@ -1,5 +1,5 @@
 
-import random
+import os
 import logging
 from functools import wraps
 
@@ -148,9 +148,23 @@ def load_modules():
 
     # Load modules
     for loc in config.get('modules', {}):
-        name, module = load_module(loc)
+        log.info(f'[green]Loading module from {loc}', extra={
+                 "markup": True})
+
+        loc = os.path.abspath(loc)
+
+        try:
+            name, module = load_module(loc)
+        except Exception as e:
+            log.exception(e)
+            log.error(
+                f'[red]An error occured while loading module {os.path.split(loc)[-1]}', extra={
+                    "markup": True})
+
         modules[name] = module
-        log.info(f'Loaded module: {module} as "{name}"')
+
+        log.info(f'[green]Loaded module: {module} as "{name}"\n', extra={
+                 "markup": True})
 
 
 def load_voice_handlers():
@@ -159,12 +173,23 @@ def load_voice_handlers():
     if not loc:
         return
 
-    name, v = load_voice_handler(loc)
+    log.info(f'[green]Loading voice handler from {loc}', extra={
+        "markup": True})
+
+    loc = os.path.abspath(loc)
+
+    try:
+        name, v = load_voice_handler(loc)
+    except Exception as e:
+        log.exception(e)
+        log.error(f'[red]An error occured while loading voice handler {os.path.split(loc)[-1]}', extra={
+            "markup": True})
 
     global voice_handler
     voice_handler = v
 
-    log.info(f'Loaded voice handler: {voice_handler} as "{name}"')
+    log.info(f'[green]Loaded voice handler: {voice_handler} as "{name}"\n', extra={
+        "markup": True})
 
 
 def start():
