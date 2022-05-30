@@ -1,4 +1,4 @@
--- Plays random song 
+-- A "recreation" of +1 (855) 444-8888 that plays one of the snippets that were played on the number--
 local math = require("math")
 local os = require("os")
 
