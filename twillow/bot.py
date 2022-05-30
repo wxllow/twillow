@@ -1,6 +1,7 @@
 
 import os
 import logging
+import inspect
 from functools import wraps
 
 from lupa import lua_type
@@ -27,11 +28,11 @@ app = Flask(__name__)
 voice_handler = None
 
 
-def send_message(body, to=config['to_number']):
+def send_message(body, to=config['to_number'], from_=config['from_number']):
     """Sends a message"""
     message = client.messages.create(
         body=body,
-        from_=config['from_number'],
+        from_=from_,
         to=to
     )
 
@@ -65,11 +66,52 @@ def help_command():
     """Help command"""
     help = MessagingResponse()
 
-    help.message("""
-    Help:
-        search - Search for something on Google
-        8ball - Ask the magic 8 ball a question
-        """.strip())
+    msg = f"-- {config.get('name', 'Twillow')} Help --\n"
+
+    for module in modules:
+        msg += f'{module}:\n'
+
+        # Get argument
+        if lua_type(modules[module]) == 'table':
+            d = [item[0] for item in list(modules[module].items())]
+        else:
+            d = dir(modules[module])
+
+        for i in d:
+            # Skip init/special methods
+            if i.startswith('_') or i == 'init':
+                continue
+
+            # See if method is a function/callable
+            f = getattr(modules[module], i)
+
+            if not callable(f):
+                continue
+
+            if lua_type(f):
+                if lua_type(f) != 'function':
+                    continue
+
+            # Add command to help message
+            msg += f'    {module} {i} '
+
+            try:
+                for arg in inspect.getargspec(f):
+                    if arg == ['self'] or not arg:
+                        continue
+
+                    msg += f"<{arg.upper()}> "
+            except:
+                # need to add argument support for lua somehow
+                pass
+
+            msg += '\n'
+
+    split_msg = [msg[index: index + 1600]
+                 for index in range(0, len(msg), 1600)]
+
+    for p in split_msg:
+        help.message(p)
 
     return str(help)
 
@@ -78,7 +120,7 @@ def error_message():
     """Error message"""
     help = MessagingResponse()
 
-    help.message("""⛔️ Oops! An error has occured!""")
+    help.message("⛔️ Oops! An error has occured!")
 
     return str(help)
 
