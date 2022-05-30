@@ -161,7 +161,7 @@ def sms_reply():
                 raise AttributeError
         except AttributeError:
             try:
-                logging.debug('Command not found, running _all')
+                log.debug('Command not found, running _all')
 
                 f = modules[command[0]]._all()
                 off = 1
