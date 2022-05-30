@@ -21,7 +21,7 @@ class SearchModule:
         self.name = "search"
         self.service = build("customsearch", "v1", developerKey=api_key)
 
-    def search(self, *q):
+    def search(self, *query):
         query = ' '.join(q)
         limit = config['module']['search'].get('limit', 3)
 
