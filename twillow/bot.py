@@ -6,7 +6,12 @@ from functools import wraps
 
 from lupa import lua_type
 from rich.logging import RichHandler
-from flask import Flask, abort, request, redirect
+
+from flask import Flask
+from flask import abort
+from flask import request
+from flask import redirect
+
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.request_validator import RequestValidator
