@@ -15,6 +15,9 @@ from flask import redirect
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.request_validator import RequestValidator
+from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.voice_response import Reject
+
 
 from .config import get_config
 from .mod import load_module, load_voice_handler
@@ -137,7 +140,11 @@ def call_reply():
     if voice_handler:
         return voice_handler.call_reply(request)
 
-    return ""
+    # Reject call if no voice handler is used
+    resp = VoiceResponse()
+    resp.reject()
+
+    return str(resp)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
