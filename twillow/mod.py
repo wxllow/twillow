@@ -1,7 +1,5 @@
-import sys
 import os
 import importlib.util
-import lupa
 from lupa import LuaRuntime
 
 
@@ -47,7 +45,7 @@ def load_module(loc, type=None):
         return name, module.new()
 
 
-def load_voice_handler(loc, type=None):
+def load_voice_handler(loc, app=None, type=None):
     """Load voice handler, returns voice handler class"""
     if not type:
         if loc.endswith('.py'):
@@ -72,7 +70,7 @@ def load_voice_handler(loc, type=None):
         if 'name' in dir(module):
             name = str(module.name)
 
-        return name, module()
+        return name, module(app)
     else:
         # Execute lau module from file
         lua = LuaRuntime(unpack_returned_tuples=True)
@@ -86,4 +84,4 @@ def load_voice_handler(loc, type=None):
         module = g.voice_handler()
         name = module.name or os.path.split(loc)[-1].split('.')[0]
 
-        return name, module.new()
+        return name, module.new(app)

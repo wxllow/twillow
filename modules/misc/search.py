@@ -22,14 +22,14 @@ class SearchModule:
         self.service = build("customsearch", "v1", developerKey=api_key)
 
     def search(self, *query):
-        query = ' '.join(q)
+        q = ' '.join(query)
         limit = config['module']['search'].get('limit', 3)
 
-        res = self.service.cse().list(q=query, cx=cse_id).execute()
+        res = self.service.cse().list(q=q, cx=cse_id).execute()
 
         resp = MessagingResponse()
 
-        resp.message(f'🔎 Results for "{query}"')
+        resp.message(f'🔎 Results for "{q}"')
 
         if int(res['searchInformation']['totalResults']) < 1:
             resp.message('⛔️ No results found!')

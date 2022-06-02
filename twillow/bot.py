@@ -6,17 +6,13 @@ from functools import wraps
 
 from lupa import lua_type
 from rich.logging import RichHandler
-
 from flask import Flask
 from flask import abort
 from flask import request
-from flask import redirect
-
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.request_validator import RequestValidator
 from twilio.twiml.voice_response import VoiceResponse
-from twilio.twiml.voice_response import Reject
 
 
 from .config import get_config
@@ -87,7 +83,7 @@ def help_command():
 
         for i in d:
             # Skip init/special methods
-            if i.startswith('_') or i == 'init':
+            if i.startswith('_') or i == 'new':
                 continue
 
             # See if method is a function/callable
@@ -233,7 +229,7 @@ def load_voice_handlers():
     loc = os.path.abspath(loc)
 
     try:
-        name, v = load_voice_handler(loc)
+        name, v = load_voice_handler(loc, app=app)
     except Exception as e:
         log.exception(e)
         log.error(f'[red]An error occured while loading voice handler {os.path.split(loc)[-1]}', extra={

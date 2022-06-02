@@ -8,7 +8,7 @@ CMIYGLVoiceHandler = {
     ['name'] = 'cmiygl' -- This is used as the command prefix
 }
 
-function CMIYGLVoiceHandler.new(o) 
+function CMIYGLVoiceHandler.new(o, app) 
     local inst = {}
 
     local songs = {
