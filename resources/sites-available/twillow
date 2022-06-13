@@ -1,0 +1,9 @@
+server {
+    listen 6969;
+    twillow 144.202.34.12;
+
+    location / {
+        include uwsgi_params; 
+        uwsgi_pass unix:/home/wl/twillow/twillow.sock;
+    }
+}
