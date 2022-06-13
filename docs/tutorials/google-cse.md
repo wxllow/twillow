@@ -20,7 +20,7 @@ Now, go to the control panel for your search engine and scroll down to "Search t
 
 ## Getting your API Key
 
-Right below that, click the "Get started" button next to "Custom Search JSON API" to generate an API token in order to access results from our engine using Python. Go through the process in the newly opened tab and write down *(not literally, just copy/paste it)* your key somewhere. 
+Right below that, click the "Get started" button next to "Custom Search JSON API" to generate an API token in order to access results from our engine using Python. Go through the process in the newly opened tab and write down *(not literally, just copy/paste it)* your key somewhere.
 
 Go back to your control panel and copy the "Search engine ID"
 

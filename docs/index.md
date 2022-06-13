@@ -1,3 +1,3 @@
 # Twillow Documentation
 
-Welcome to the Twillow docs :)                                                                  ,
+Welcome to the Twillow docs :)

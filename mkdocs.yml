@@ -2,7 +2,7 @@ site_name: Twillow Docs
 
 theme:
   name: material
-  custom_dir: docs/overrides
+  # custom_dir: docs/overrides
 
   palette:
     scheme: slate
@@ -18,9 +18,12 @@ nav:
   - Homepage:
     - index.md
 
+  - Tutorials:
+    - Setting up Google CSE: tutorials/google-cse.md
+
   - Module Development:
     - Module Development with Lua (Recommended): module-dev/lua.md
-    - Module Development with Python: module-dev/lua.md
+    - Module Development with Python: module-dev/python.md
 
 markdown_extensions:
   - def_list
