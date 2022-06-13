@@ -1,6 +1,8 @@
 /config.toml
 secret_*
 
+*.lock
+
 # Created by https://www.toptal.com/developers/gitignore/api/Python,macOS
 # Edit at https://www.toptal.com/developers/gitignore?templates=Python,macOS
 
