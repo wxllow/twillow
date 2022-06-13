@@ -198,7 +198,7 @@ def load_modules():
 
     # Load modules
     for loc in config.get('modules', {}):
-        log.info(f'[green]Loading module from {loc}', extra={
+        log.info(f'[bright_green]Loading module from {loc}', extra={
                  "markup": True})
 
         loc = os.path.abspath(loc)
@@ -208,12 +208,13 @@ def load_modules():
         except Exception as e:
             log.exception(e)
             log.error(
-                f'[red]An error occured while loading module {os.path.split(loc)[-1]}', extra={
+                f'[bright_red]An error occured while loading module {os.path.split(loc)[-1]}', extra={
                     "markup": True})
+            continue
 
         modules[name] = module
 
-        log.info(f'[green]Loaded module: {module} as "{name}"\n', extra={
+        log.info(f'[bright_green]Loaded module: {module} as "{name}"\n', extra={
                  "markup": True})
 
 
@@ -223,7 +224,7 @@ def load_voice_handlers():
     if not loc:
         return
 
-    log.info(f'[green]Loading voice handler from {loc}', extra={
+    log.info(f'[bright_green]Loading voice handler from {loc}', extra={
         "markup": True})
 
     loc = os.path.abspath(loc)
@@ -232,23 +233,21 @@ def load_voice_handlers():
         name, v = load_voice_handler(loc, app=app)
     except Exception as e:
         log.exception(e)
-        log.error(f'[red]An error occured while loading voice handler {os.path.split(loc)[-1]}', extra={
+        log.error(f'[bright_red]An error occured while loading voice handler {os.path.split(loc)[-1]}', extra={
             "markup": True})
 
     global voice_handler
     voice_handler = v
 
-    log.info(f'[green]Loaded voice handler: {voice_handler} as "{name}"\n', extra={
+    log.info(f'[bright_green]Loaded voice handler: {voice_handler} as "{name}"\n', extra={
         "markup": True})
 
 
+@app.before_first_request
 def start():
     load_modules()
-
     load_voice_handlers()
-
-    app.run(debug=False)
 
 
 if __name__ == '__main__':
-    start()
+    app.run(debug=True)

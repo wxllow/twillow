@@ -1,0 +1,18 @@
+[Unit]
+Description=uWSGI instance to serve Twillow
+After=network.target
+
+[Service]
+WorkingDirectory=/home/sammy/myproject
+ExecStart=poetry run uwsgi --ini wsgi.ini
+
+# Disable Python's buffering of STDOUT and STDERR, so that output from the
+# service shows up immediately in systemd's logs
+Environment=PYTHONUNBUFFERED=1
+
+Restart=on-failure
+Type=simple
+User=wl
+
+[Install]
+WantedBy=multiuser.target
