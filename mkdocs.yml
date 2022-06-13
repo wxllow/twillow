@@ -1,0 +1,28 @@
+site_name: Twillow Docs
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+
+  palette:
+    scheme: slate
+    primary: light blue
+
+  features:
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.share
+
+nav:
+  - Homepage:
+    - index.md
+
+  - Module Development:
+    - Module Development with Lua (Recommended): module-dev/lua.md
+    - Module Development with Python: module-dev/lua.md
+
+markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
