@@ -13,24 +13,10 @@ A ***work in progress*** modular SMS bot using the Twilio API, written in Python
 ## Requirements
 
 - [Python 3.9 or later](https://www.python.org/downloads/)
+- [Poetry](https://pypi.org/project/poetry/)
 - [Lua](https://www.lua.org/download.html)
 - [Twilio](https://www.twilio.com/) account with a phone number
 - Public-facing webserver or port forwarding (to make webserver accessible to Twilio)
-
-### Optional Requirements
-
-- [Google Custom Search Engine API Key](docs/google-cse.md) (for search module)
-
-### Dependencies
-
-#### From PyPi/PIP
-
-- [Twillo API](https://pypi.org/project/twilio/)
-- [Flask](https://pypi.org/project/Flask/)
-- [TOML](https://pypi.org/project/toml/)
-- [Rich](https://pypi.org/project/rich/)
-- [google-api-python-client](https://pypi.org/project/google-api-python-client/) (for built-in search module)
-- [Lupa](https://pypi.org/project/lupa/#building-with-different-lua-versions) (for lua modules)
 
 ## Installation
 
@@ -38,12 +24,14 @@ A ***work in progress*** modular SMS bot using the Twilio API, written in Python
 
 ```sh
 git clone https://github.com/wxllow/twillow
+cd twillow
 ```
 
-- Create a virtual environment
+- Install dependencies
   
 ```sh
-python3 -m venv ./venv
+python -m pip install poetry # If you don't already have poetry installed
+poetry install
 ```
 
 - Copy and edit the config file
@@ -55,11 +43,12 @@ cp resources/config.toml config.toml
 - Run the bot
 
 ```sh
-python3 main.py
+poetry run python main.py
 ```
 
 ## Useful Resources
 
-- [Setting up Google CSE](docs/google-cse.md) (for search module)
+- [Setting up Google CSE](docs/tutorials/google-cse.md) (for search module)
+- [Twillow Documentation](https://twillow.wxllow.dev)
 - [TwiML™ for Programmable SMS](https://www.twilio.com/docs/messaging/twiml)
 - [TwiML™ for Programmable Voice](https://www.google.com/search?q=TwiML&ie=UTF-8)
