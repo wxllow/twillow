@@ -15,4 +15,4 @@ Type=simple
 User=wl
 
 [Install]
-WantedBy=multiuser.target
+WantedBy=multi-user.target
