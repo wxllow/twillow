@@ -3,7 +3,7 @@ Description=uWSGI instance to serve Twillow
 After=network.target
 
 [Service]
-WorkingDirectory=/home/sammy/myproject
+WorkingDirectory=/home/wl/twillow
 ExecStart=poetry run uwsgi --ini wsgi.ini
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
