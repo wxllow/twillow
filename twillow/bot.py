@@ -1,4 +1,3 @@
-
 import os
 import logging
 import inspect
@@ -19,43 +18,40 @@ from .config import get_config
 from .mod import load_module, load_voice_handler
 from . import listutils
 
-logging.basicConfig(level=logging.DEBUG, format="%(message)s",
-                    datefmt="[%X]", handlers=[RichHandler()])
+logging.basicConfig(
+    level=logging.DEBUG, format="%(message)s", datefmt="[%X]", handlers=[RichHandler()]
+)
 log = logging.getLogger("rich")
 
 config = get_config()
 modules = {}  # Contains modules
 
-client = Client(config['account_sid'], config['auth_token'])  # Twilio client
+client = Client(config["account_sid"], config["auth_token"])  # Twilio client
 app = Flask(__name__)
 
 voice_handler = None
 
 
-def send_message(body, to=config['to_number'], from_=config['from_number']):
+def send_message(body, to=config["to_number"], from_=config["from_number"]):
     """Sends a message"""
-    message = client.messages.create(
-        body=body,
-        from_=from_,
-        to=to
-    )
+    message = client.messages.create(body=body, from_=from_, to=to)
 
     return message
 
 
 def validate_twilio_request(f):
     """Validates that incoming requests genuinely originated from Twilio"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Create an instance of the RequestValidator class
-        validator = RequestValidator(config['auth_token'])
+        validator = RequestValidator(config["auth_token"])
 
         # Validate the request using its URL, POST data,
         # and X-TWILIO-SIGNATURE header
         request_valid = validator.validate(
-            request.url,
-            request.form,
-            request.headers.get('X-TWILIO-SIGNATURE', ''))
+            request.url, request.form, request.headers.get("X-TWILIO-SIGNATURE", "")
+        )
 
         # Continue processing the request if it's valid, return a 403 error if it's not
         if request_valid:
@@ -73,17 +69,17 @@ def help_command():
     msg = f"-- {config.get('name', 'Twillow')} Help --\n"
 
     for module in modules:
-        msg += f'{module}:\n'
+        msg += f"{module}:\n"
 
         # Get argument
-        if lua_type(modules[module]) == 'table':
+        if lua_type(modules[module]) == "table":
             d = [item[0] for item in list(modules[module].items())]
         else:
             d = dir(modules[module])
 
         for i in d:
             # Skip init/special methods
-            if i.startswith('_') or i == 'new':
+            if i.startswith("_") or i == "new":
                 continue
 
             # See if method is a function/callable
@@ -93,15 +89,15 @@ def help_command():
                 continue
 
             if lua_type(f):
-                if lua_type(f) != 'function':
+                if lua_type(f) != "function":
                     continue
 
             # Add command to help message
-            msg += f'    {module} {i} '
+            msg += f"    {module} {i} "
 
             try:
                 for arg in inspect.getargspec(f):
-                    if arg == ['self'] or not arg:
+                    if arg == ["self"] or not arg:
                         continue
 
                     msg += f"<{arg.upper()}> "
@@ -109,10 +105,9 @@ def help_command():
                 # need to add argument support for lua somehow
                 pass
 
-            msg += '\n'
+            msg += "\n"
 
-    split_msg = [msg[index: index + 1600]
-                 for index in range(0, len(msg), 1600)]
+    split_msg = [msg[index : index + 1600] for index in range(0, len(msg), 1600)]
 
     for p in split_msg:
         help.message(p)
@@ -129,7 +124,7 @@ def error_message():
     return str(help)
 
 
-@app.route('/voice', methods=['GET', 'POST'])
+@app.route("/voice", methods=["GET", "POST"])
 @validate_twilio_request
 def call_reply():
     """Replies to incoming calls"""
@@ -143,11 +138,11 @@ def call_reply():
     return str(resp)
 
 
-@app.route("/sms", methods=['GET', 'POST'])
+@app.route("/sms", methods=["GET", "POST"])
 @validate_twilio_request
 def sms_reply():
     """Respond to incoming messages."""
-    command = request.values.get('Body', '').strip().split()
+    command = request.values.get("Body", "").strip().split()
 
     help = help_command()
 
@@ -169,7 +164,7 @@ def sms_reply():
                 raise AttributeError
         except AttributeError:
             try:
-                log.debug('Command not found, running _all')
+                log.debug("Command not found, running _all")
 
                 f = modules[command[0]]._all()
                 off = 1
@@ -185,7 +180,7 @@ def sms_reply():
         args = listutils.get_rem(command, off)
 
         # Add blank arg to fix first arg not working with lua
-        if lua_type(f) == 'function':
+        if lua_type(f) == "function":
             args.insert(0, None)
 
         return str(f(*args))
@@ -197,9 +192,8 @@ def load_modules():
     """Load modules (unloads previously loaded onces if keep is not true"""
 
     # Load modules
-    for loc in config.get('modules', {}):
-        log.info(f'[bright_green]Loading module from {loc}', extra={
-                 "markup": True})
+    for loc in config.get("modules", {}):
+        log.info(f"[bright_green]Loading module from {loc}", extra={"markup": True})
 
         loc = os.path.abspath(loc)
 
@@ -208,24 +202,26 @@ def load_modules():
         except Exception as e:
             log.exception(e)
             log.error(
-                f'[bright_red]An error occured while loading module {os.path.split(loc)[-1]}', extra={
-                    "markup": True})
+                f"[bright_red]An error occured while loading module {os.path.split(loc)[-1]}",
+                extra={"markup": True},
+            )
             continue
 
         modules[name] = module
 
-        log.info(f'[bright_green]Loaded module: {module} as "{name}"\n', extra={
-                 "markup": True})
+        log.info(
+            f'[bright_green]Loaded module: {module} as "{name}"\n',
+            extra={"markup": True},
+        )
 
 
 def load_voice_handlers():
-    loc = config.get('voice_handler', None)
+    loc = config.get("voice_handler", None)
 
     if not loc:
         return
 
-    log.info(f'[bright_green]Loading voice handler from {loc}', extra={
-        "markup": True})
+    log.info(f"[bright_green]Loading voice handler from {loc}", extra={"markup": True})
 
     loc = os.path.abspath(loc)
 
@@ -233,14 +229,18 @@ def load_voice_handlers():
         name, v = load_voice_handler(loc, app=app)
     except Exception as e:
         log.exception(e)
-        log.error(f'[bright_red]An error occured while loading voice handler {os.path.split(loc)[-1]}', extra={
-            "markup": True})
+        log.error(
+            f"[bright_red]An error occured while loading voice handler {os.path.split(loc)[-1]}",
+            extra={"markup": True},
+        )
 
     global voice_handler
     voice_handler = v
 
-    log.info(f'[bright_green]Loaded voice handler: {voice_handler} as "{name}"\n', extra={
-        "markup": True})
+    log.info(
+        f'[bright_green]Loaded voice handler: {voice_handler} as "{name}"\n',
+        extra={"markup": True},
+    )
 
 
 @app.before_first_request
@@ -249,5 +249,5 @@ def start():
     load_voice_handlers()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

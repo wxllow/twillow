@@ -10,10 +10,10 @@ from twillow.config import get_config
 config = get_config()
 
 try:
-    api_key = config['module']['search']['google_api_key']
-    cse_id = config['module']['search']['google_cse_id']
+    api_key = config["module"]["search"]["google_api_key"]
+    cse_id = config["module"]["search"]["google_cse_id"]
 except KeyError:
-    raise Exception('Google CSE API Key is required! See docs/google-cse.md')
+    raise Exception("Google CSE API Key is required! See docs/google-cse.md")
 
 
 class SearchModule:
@@ -22,8 +22,8 @@ class SearchModule:
         self.service = build("customsearch", "v1", developerKey=api_key)
 
     def search(self, *query):
-        q = ' '.join(query)
-        limit = config['module']['search'].get('limit', 3)
+        q = " ".join(query)
+        limit = config["module"]["search"].get("limit", 3)
 
         res = self.service.cse().list(q=q, cx=cse_id).execute()
 
@@ -31,11 +31,11 @@ class SearchModule:
 
         resp.message(f'🔎 Results for "{q}"')
 
-        if int(res['searchInformation']['totalResults']) < 1:
-            resp.message('⛔️ No results found!')
+        if int(res["searchInformation"]["totalResults"]) < 1:
+            resp.message("⛔️ No results found!")
             return resp
 
-        for item in islice(res['items'], 0, limit):
+        for item in islice(res["items"], 0, limit):
             resp.message(f"{item['title']}\n\n{item['link']}")
 
         return resp
