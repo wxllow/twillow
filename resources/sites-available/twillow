@@ -1,6 +1,6 @@
 server {
     listen 6969;
-    twillow 144.202.34.12;
+    server_name twillow;
 
     location / {
         include uwsgi_params; 
